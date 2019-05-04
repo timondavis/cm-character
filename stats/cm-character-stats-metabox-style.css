@@ -1,0 +1,7 @@
+#cm-character-stats .field-wrapper {
+    display: flex;
+}
+
+#cm-character-stats .field-wrapper label {
+    flex: 40%;
+}
