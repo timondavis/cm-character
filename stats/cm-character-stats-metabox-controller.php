@@ -44,9 +44,9 @@ class CmCharacterStatsController {
 		// Load model and apply needed information to $data
 		$model = CmCharacterStatsService::fetch($post->ID);
 
-		$data->fields = array();
+	$data->fields = array();
 		foreach( $model as $key => $value ) {
-			if ($key === CmCharacterStatsService::DB_PRIMARY_KEY) { continue; }
+			if ($key === CmCharacterStatsService::DB_PRIMARY_KEY ) { continue; }
 			$data->fields[$key] = $value;
 		}
 

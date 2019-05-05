@@ -158,4 +158,8 @@ class CmCharacterClassPostType {
 		remove_meta_box( 'commentsdiv', self::TYPE_NAME, 'normal' );
 		remove_meta_box( 'postimagediv', self::TYPE_NAME, 'side' );
 	}
+
+	public function override_default_query() {
+
+	}
 }

@@ -19,38 +19,29 @@ class CmCharacterInstall {
 		global $wpdb;
 
 		$stats_table_name = $wpdb->prefix . self::STATS_TABLE_NAME;
-		$character_table_name = $wpdb->prefix . self::CHARACTER_TABLE_NAME;
 		$class_table_name = $wpdb->prefix . self::CLASS_TABLE_NAME;
 
 		$charset_collate = $wpdb->get_charset_collate();
 
 		$stats_sql =
 		"CREATE TABLE " . $stats_table_name . " (
-			id int NOT NULL,
+			post_id int NOT NULL,
 			strength tinyint NOT NULL,
 			dexterity tinyint NOT NULL,
 			constitution tinyint NOT NULL,
 			wisdom tinyint NOT NULL,
 			intelligence tinyint NOT NULL,
 			charisma tinyint NOT NULL,
-			PRIMARY KEY (id) ) " . $charset_collate . ";";
-
-		$character_sql =
-		"CREATE TABLE " . $character_table_name . " (
-			id int NOT NULL,
-			classid int NOT NULL,
-			name varchar(64) NOT NULL,
-			description varchar(2048),
-		PRIMARY KEY (id) ) " . $charset_collate . ";";
+			PRIMARY KEY (post_id) ) " . $charset_collate . ";";
 
 		$class_sql =
 		"CREATE TABLE " . $class_table_name . "(
-			classid int NOT NULL AUTO_INCREMENT,
+			post_id int NOT NULL,
 			classname varchar(32) NOT NULL,
 			description varchar(2048) NOT NULL,
-		PRIMARY KEY (classid) ) " . $charset_collate . ";";
+		PRIMARY KEY (post_id) ) " . $charset_collate . ";";
 
-		$sql = $stats_sql . $character_sql . $class_sql;
+		$sql = $stats_sql . $class_sql;
 
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 		dbDelta( $sql );
@@ -66,19 +57,15 @@ class CmCharacterInstall {
 		global $wpdb;
 
 		$stats_table_name = $wpdb->prefix . self::STATS_TABLE_NAME;
-		$character_table_name = $wpdb->prefix . self::CHARACTER_TABLE_NAME;
 		$class_table_name = $wpdb->prefix . self::CLASS_TABLE_NAME;
 
 		$stats_sql =
 		"DROP TABLE " . $stats_table_name . ";";
 
-		$character_sql =
-		"DROP TABLE " . $character_table_name . ";";
-
 		$class_sql =
 		"DROP TABLE" . $class_table_name . ";";
 
-		$sql = $stats_sql . $character_sql . $class_sql;
+		$sql = $stats_sql . $class_sql;
 
 		dbDelta($sql);
 	}
@@ -89,28 +76,18 @@ class CmCharacterInstall {
 			return;
 		}
 
-		$this->cm_character_insert_default_classes();
+		$this->cm_character_insert_default_content();
 	}
 
-	private function cm_character_insert_default_classes() {
+	private function cm_character_insert_default_content() {
 
-		global $wpdb;
-		$table_name = $wpdb->prefix . self::CLASS_TABLE_NAME;
-
-		$wpdb->insert(
-			$table_name,
-			array(
-				'classname' => 'Wizard',
-				'description' => 'Spell Caster'
-			)
-		);
 	}
 
 	private static function cm_character_should_update() {
 		$registered_version = get_option( self::CM_CHARACTER_VERSION_OPTION );
 
 		if ($registered_version &&
-		    $registered_version >= self::CM_CHARACTER_VERSION) {
+		    $registered_version >= CM_CHARACTER_VERSION) {
 
 			return false;
 		}

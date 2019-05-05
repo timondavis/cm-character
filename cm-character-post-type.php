@@ -95,6 +95,7 @@ class CmCharacterPostType {
 	function __construct() {
 		add_action( 'init', array( &$this, 'register_super_page_post_type' ));
 		add_action( 'do_meta_boxes', array( &$this, 'remove_unwanted_meta_boxes' ));
+		add_filter( 'posts_clauses', array( 'CmCharacterService', 'attach_data_to_loop' ));
 	}
 
 	function register_super_page_post_type() {
