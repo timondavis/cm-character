@@ -95,6 +95,7 @@ class CmCharacterClassPostType {
 	function __construct() {
 		add_action( 'init', array( &$this, 'register_post_type' ));
 		add_action( 'do_meta_boxes', array( &$this, 'remove_unwanted_meta_boxes' ));
+
 	}
 
 	function register_post_type() {
@@ -159,7 +160,5 @@ class CmCharacterClassPostType {
 		remove_meta_box( 'postimagediv', self::TYPE_NAME, 'side' );
 	}
 
-	public function override_default_query() {
 
-	}
 }

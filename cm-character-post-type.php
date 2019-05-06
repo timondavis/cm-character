@@ -61,6 +61,12 @@ class CmCharacterPostType {
 
 	const PERMISSION_EDIT_POST          = 'edit_post';
 
+	const DEFAULT_ACTION_PRIORITY       = 1000;
+	const DEFAULT_FILTER_PRIORITY       = 1000;
+
+	const SLUG_FILTER_PRIORITY           = 'cm-character-filter-priority';
+	const SLUG_ACTION_PRIORITY           = 'cm-character-action-priority';
+
 	// Type WP Post Features
 	const TYPE_POST_FEATURES            = array(
 		'title',
@@ -93,12 +99,25 @@ class CmCharacterPostType {
 	);
 
 	function __construct() {
-		add_action( 'init', array( &$this, 'register_super_page_post_type' ));
-		add_action( 'do_meta_boxes', array( &$this, 'remove_unwanted_meta_boxes' ));
-		add_filter( 'posts_clauses', array( 'CmCharacterService', 'attach_data_to_loop' ));
+
+		// Register this post type to wordpress.
+		add_action( 'init', array( &$this, 'register_post_type_to_wp' ),
+			apply_filters( self::SLUG_ACTION_PRIORITY, self::DEFAULT_ACTION_PRIORITY, 'register_post_type_to_wp' ));
+
+		// Unregister sticky metaboxes unwanted by this post type.
+		add_action( 'do_meta_boxes', array( &$this, 'remove_unwanted_meta_boxes' ),
+			apply_filters( self::SLUG_ACTION_PRIORITY, self::DEFAULT_ACTION_PRIORITY, 'remove_unwanted_meta_boxes' ));
+
+		// Update the loop when querying for this post type.
+		add_filter( 'posts_clauses', array( 'CmCharacterService', 'attach_data_to_loop' ),
+			apply_filters( self::SLUG_FILTER_PRIORITY, self::DEFAULT_FILTER_PRIORITY, 'attach_data_to_loop' ));
+
+		// Change default title label on editor page.
+		add_action( 'enter_title_here', array( &$this, 'alter_title_field_label_in_editor' ),
+			apply_filters( self::SLUG_FILTER_PRIORITY, self::DEFAULT_FILTER_PRIORITY, 'alter_title_field_label_in_editor' ));
 	}
 
-	function register_super_page_post_type() {
+	function register_post_type_to_wp() {
 
 		register_post_type( sanitize_key( self::TYPE_NAME ), array(
 			'labels' => array(
@@ -157,5 +176,21 @@ class CmCharacterPostType {
 	public function remove_unwanted_meta_boxes() {
 		remove_meta_box( 'commentstatusdiv', self::TYPE_NAME, 'normal' );
 		remove_meta_box( 'commentsdiv', self::TYPE_NAME, 'normal' );
+	}
+
+	/**
+	 * Alters the title field in the editor when viewing the editor page for this content type.
+	 *
+	 * @see add_action( 'enter_title_here' )
+	 * @param $title
+	 * @param $post
+	 */
+	public function alter_title_field_label_in_editor( $title, $post ) {
+
+		if( $post->post_type === self::TYPE_NAME ) {
+			$title = 'Name';
+		}
+
+		return $title;
 	}
 }
